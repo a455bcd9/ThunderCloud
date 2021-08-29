@@ -1,5 +1,5 @@
 # ThunderCloud - Lightning in the Cloud!
-This project makes it really easy (or at least as easy as it can be) to run a lightning node *cheaply* in the cloud. It contains a CDK (https://docs.aws.amazon.com/cdk/latest/guide/home.html) stack that sets up the required networking and an EC2 instance to run your node, and a setup script that installs and configures LND using neutrino as the backend. The EC2 instance used is a `t4g.micro`, an ARM-based instance with a gig of memory and two cores which runs just over $6/month, or just below $4/month if you commit to a year through a Reserved Instance (https://aws.amazon.com/ec2/pricing/reserved-instances/). So for ~$6 a month you can run a lightning node and now worry about hardware, power, networking, etc. Or if you want to run it for 2 weeks to try some experiment or something, you can and then just tear it down and stop the meter!
+This project makes it really easy (or at least as easy as it can be) to run a lightning node *cheaply* in the cloud. It contains a CDK (https://docs.aws.amazon.com/cdk/latest/guide/home.html) stack that sets up the required networking and an EC2 instance to run your node, and a setup script that installs and configures LND using neutrino as the backend. The EC2 instance used is a `t4g.micro`, an ARM-based instance with a gig of memory and two cores which runs just over $6/month, or just below $4/month if you commit to a year through a Reserved Instance (https://aws.amazon.com/ec2/pricing/reserved-instances/). So for ~$6 a month you can run a lightning node and not worry about hardware, power, networking, etc. Or if you want to run it for 2 weeks to try some experiment or something, you can and then just tear it down and stop the meter!
 
 ## Things you need to do first
 - Install the AWS CLI (https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and set it up with AWS creds.
@@ -31,6 +31,7 @@ You can use `lncli` to open channels, create invoices, do all the fun lightning 
 There is no step 2. You can also go find the stack in CloudFormation and delete it there. either way works.
 
 ## Stuff to look at and customize
+- You'll want to change the node alias. Either set the right line in `lib/configure-node.sh` before you run `cdk deploy`, or update `~/.lnd/lnd.conf` and restart lnd on the instance. either works.
 - Want to see the CFn template that CDK creates? do `cdk synth` from the project root and it'll spit out the yaml template that Cloudformation will use to create the resources.
 - When your node first boots, it'll execute `lib/configure-node.sh` as root. This is where lnd gets downloaded and configured. Feel free to tweak it to your needs.
 - All the infrastructure is defined in `lib/lightningnode-stack.ts`. You can add/remove/change things there to your liking. doing a `cdk deploy` will update the stack. Changing some instance properties will result in the node being deleted and recreated. Be careful changing the instance.

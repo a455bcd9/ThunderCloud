@@ -1,11 +1,14 @@
 #!/bin/bash
 
+# Download and unpack the latest lnd. 
 wget https://github.com/lightningnetwork/lnd/releases/download/v0.13.1-beta/lnd-linux-arm64-v0.13.1-beta.tar.gz
+# TODO: verify signatures on the download
 tar xf lnd-linux-arm64-v0.13.1-beta.tar.gz
 mkdir /home/ec2-user/bin
 cp lnd-linux-arm64-v0.13.1-beta/* /home/ec2-user/bin/
 rm -rf lnd-linux-arm64-v0.13.1-beta*
 
+# Write lnd config. Feel free to customize this to your liking. You'll want to change the node alias
 mkdir /home/ec2-user/.lnd
 PUBLIC_IPV4=$(curl http://169.254.169.254/latest/meta-data/public-ipv4/)
 cat << EOF > /home/ec2-user/.lnd/lnd.conf
@@ -140,8 +143,12 @@ routerrpc.penaltyhalflife=6h0m0s
 routing.assumechanvalid=1
 
 EOF
+
+# Generate a random password for the lnd wallet. 
+# Note: YOU should still be the one to run `lnd create` so that you can write down the seed backup
 openssl rand -hex 21 > /home/ec2-user/.lnd/wallet_password
 
+# Write a systemd script so it starts up at boot or restarts if it dies
 cat << EOF > /etc/systemd/system/lnd.service
 [Service]
 Environment=HOME=/home/ec2-user
@@ -160,6 +167,7 @@ WantedBy=multi-user.target
 
 EOF
 
+# Setup bos. currently kind of broken. npm gets installed though
 curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
 yum install -y nodejs
 mkdir /home/ec2-user/.npm-global
@@ -167,10 +175,13 @@ npm config set prefix '/home/ec2-user/.npm-global'
 echo 'PATH=/home/ec2-user/.npm-global/bin:$PATH' >> /home/ec2-user/.bashrc
 npm install -g balanceofsatoshis
 
+# make sure the user owns everything we just did
 chown -R ec2-user: /home/ec2-user/.lnd
 chown -R ec2-user: /home/ec2-user/.npm-global
 chown -R ec2-user: /home/ec2-user/bin
 
-
+# ensure the wallet is unlocked by unlocking it every 5 minutes
 echo '*/5 * * * * ec2-user /home/ec2-user/.npm-global/bin/bos unlock /home/ec2-user/.lnd/wallet_password' >> /etc/crontab
+
+# Start lnd!
 systemctl start lnd.service
