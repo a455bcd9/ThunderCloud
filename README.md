@@ -26,6 +26,8 @@ Copy and paste that first command (`aws secretsmanager ...`) to download the SSH
 
 You can use `lncli` to open channels, create invoices, do all the fun lightning things. `bos` is also installed if you want to use it for bos-flavored channel balancing, batch channel opens, etc.
 
+By default, the grpc port will not be accessible. There's a security group that get's created for it, but isn't attached to the node. If you uncomment the line that says `// instance.addSecurityGroup(rpcSg);` and run `cdk deploy`, it'll attach that security group and you'll be able to get to the grpc ports. Want to close them up? comment that line out and do `cdk deploy` again and it'll detach the security group.
+
 ## Shutting down the node
 1. go into the project root and do `cdk destroy`
 There is no step 2. You can also go find the stack in CloudFormation and delete it there. either way works.
@@ -44,12 +46,12 @@ I wanted to make the instance small and cheap. If you want to run a full `bitcoi
 - Does this run RTL or Thunderhub?
 No. Maybe it will in the future. Right now it's lncli and bos only.
 
-- How do I connect lnd's GRPC ports?
-You'll need to add a security group rule for it. I'll add it to the stack soon.
-
 ## Possible future enhancements (PR's welcome!)
 - automatically backup channel state to S3
 - set up RTL or Thunderhub
+- use an elastic-ip for the node
+- would be cool to do a 1/1 autoscaling group, but need to make sure channel backup is SOLID
+- second instance for a watchtower
 
 ## Credits
-Much of the lnd.conf and the systemd unit script were cribbed from Alex Bosworth's run-lnd repo (https://github.com/alexbosworth/run-lnd)
+Most of the lnd.conf and the systemd unit script were cribbed from Alex Bosworth's run-lnd repo (https://github.com/alexbosworth/run-lnd)
