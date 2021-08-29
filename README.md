@@ -18,6 +18,7 @@ ThundercloudStack.KeyName = cdk-keypair
 ThundercloudStack.sshcommand = ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user@54.159.56.96
 ```
 Copy and paste that first command (`aws secretsmanager ...`) to download the SSH key for your node
+
 5. Copy and paste the ssh command (last line) to SSH to your node. 
 6. Do `ps ax` on the instance and look for lnd. if its not running, give it a minute, the setup script is stil running. 
 7. `cat ~/.lnd/wallet_password` and copy it down. Then do `lncli create` to create a new lightning wallet. Supply the password you just wrote down (or copy/paste it). choose "no" when it asks if you want to encrypt the wallet. It will spit out a 24 word seed phrase **WRITE DOWN YOUR SEED WORDS**
