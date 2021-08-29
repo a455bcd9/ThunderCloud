@@ -45,3 +45,6 @@ No. Maybe it will in the future. Right now it's lncli and bos only.
 
 - How do I connect lnd's GRPC ports?
 You'll need to add a security group rule for it. I'll add it to the stack soon.
+
+## Credits
+Much of the lnd.conf and the systemd unit script were cribbed from Alex Bosworth's run-lnd repo
