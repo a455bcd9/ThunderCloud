@@ -46,5 +46,9 @@ No. Maybe it will in the future. Right now it's lncli and bos only.
 - How do I connect lnd's GRPC ports?
 You'll need to add a security group rule for it. I'll add it to the stack soon.
 
+## Possible future enhancements (PR's welcome!)
+- automatically backup channel state to S3
+- set up RTL or Thunderhub
+
 ## Credits
-Much of the lnd.conf and the systemd unit script were cribbed from Alex Bosworth's run-lnd repo
+Much of the lnd.conf and the systemd unit script were cribbed from Alex Bosworth's run-lnd repo (https://github.com/alexbosworth/run-lnd)
