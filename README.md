@@ -7,7 +7,7 @@ This project makes it really easy (or at least as easy as it can be) to run a li
 
 ## Instructions
 1. cd into the `thundercloud` root and do `npm install`.
-2. run `cdk deploy`
+2. run `cdk bootstrap` (only needed once per account) and then `cdk deploy`
 3. watch the pretty bars fill up
 4. It will spit out something like this:
 ```
