@@ -25,7 +25,6 @@ export class LightningNode extends cdk.Stack {
       name: 'cdk-keypair',
       description: 'Key Pair created with CDK Deployment',
     });
-    key.grantReadOnPublicKey
     
     // Security groups. I made three different ones because adding/removing SGs from instances
     // is easier to do through automation than changing rules on a single SG.

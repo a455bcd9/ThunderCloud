@@ -52,6 +52,7 @@ No. Maybe it will in the future. Right now it's lncli and bos only.
 - use an elastic-ip for the node
 - would be cool to do a 1/1 autoscaling group, but need to make sure channel backup is SOLID
 - second instance for a watchtower
+- use ec2 instance-connect instead of the ssh key
 
 ## Credits
 Most of the lnd.conf and the systemd unit script were cribbed from Alex Bosworth's run-lnd repo (https://github.com/alexbosworth/run-lnd)
