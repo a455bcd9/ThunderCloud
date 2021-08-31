@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import {Asset} from '@aws-cdk/aws-s3-assets';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import * as path from 'path';
+import { CfnEIP } from '@aws-cdk/aws-ec2';
 
 
 export class LightningNode extends cdk.Stack {
@@ -46,6 +47,11 @@ export class LightningNode extends cdk.Stack {
       description: 'Allow access to lnd grpc interface',
     });
     rpcSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(10009));
+    const restSg = new ec2.SecurityGroup(this, "RestSecurityGroup", {
+      vpc: vpc,
+      description: "Allow access to lnd REST ports"
+    });
+    restSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080));
 
     // grab the latest hvm arm64 AL2 AMI
     const ami = new ec2.AmazonLinuxImage({
@@ -65,6 +71,15 @@ export class LightningNode extends cdk.Stack {
     // Uncomment this next line to allow access to GRPC from the world. 
     // Feel free to change the ingress rule above to lock down access to a specific IP or range
     // instance.addSecurityGroup(rpcSg);
+
+    // Uncomment this next line to allow access to port 443 for REST from the world
+    // You can also edit the ingress rule above if you want a different port
+    // instance.addSecurityGroup(restSg);
+
+    const eip = new CfnEIP(this, "NodeEIP", {
+      domain: "vpc",
+      instanceId: instance.instanceId
+    });
 
     // Wire the bootstrap script into the instance userdata
     const localPath = instance.userData.addS3DownloadCommand({

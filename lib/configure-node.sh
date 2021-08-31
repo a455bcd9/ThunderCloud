@@ -61,6 +61,9 @@ listen=0.0.0.0:9735
 # gRPC socket binding
 rpclisten=0.0.0.0:10009
 
+# REST socket binding
+restlisten=0.0.0.0:8080
+
 # Avoid slow startup time
 sync-freelist=1
 
@@ -184,4 +187,5 @@ chown -R ec2-user: /home/ec2-user/bin
 echo '*/5 * * * * ec2-user /home/ec2-user/.npm-global/bin/bos unlock /home/ec2-user/.lnd/wallet_password' >> /etc/crontab
 
 # Start lnd!
+systemctl enable lnd.service
 systemctl start lnd.service
