@@ -28,6 +28,8 @@ You can use `lncli` to open channels, create invoices, do all the fun lightning 
 
 By default, the grpc port will not be accessible. There's a security group that get's created for it, but isn't attached to the node. If you uncomment the line that says `// instance.addSecurityGroup(rpcSg);` and run `cdk deploy`, it'll attach that security group and you'll be able to get to the grpc ports. Want to close them up? comment that line out and do `cdk deploy` again and it'll detach the security group.
 
+Want to add a second (or third or fourth) node? Go into `bin/thundercloud.ts` and add a line at the end like `new LightningNode(app, 'SecondLightningNode', {stackName: "SecondLightningNode"});`, then do `cdk deploy SecondLightningNode`. 
+
 ## Shutting down the node
 1. go into the project root and do `cdk destroy`
 There is no step 2. You can also go find the stack in CloudFormation and delete it there. either way works.

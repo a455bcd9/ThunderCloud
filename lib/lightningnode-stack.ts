@@ -14,40 +14,38 @@ export class LightningNode extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const suffix = props?.stackName || "";
     // Set up a VPC with public and isolated subnets in 3 AZs (out of the list above)
-    const vpc = new ec2.Vpc(this, "vpc", {
+    const vpc = new ec2.Vpc(this, "vpc" + suffix, {
       cidr: "10.0.0.0/16",
       natGateways: 0,
       maxAzs: 3,
     });
 
     // SSH key for the node
-    const key = new KeyPair(this, 'KeyPair', {
+    const key = new KeyPair(this, 'KeyPair' + suffix, {
       name: 'cdk-keypair',
       description: 'Key Pair created with CDK Deployment',
     });
     
     // Security groups. I made three different ones because adding/removing SGs from instances
     // is easier to do through automation than changing rules on a single SG.
-    const sshSg = new ec2.SecurityGroup(this, 'sshSecurityGroup', {
+    const sshSg = new ec2.SecurityGroup(this, 'sshSecurityGroup' + suffix, {
       vpc,
       description: 'Allow SSH (TCP port 22) in',
     });
     sshSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'Allow SSH Access')
-    const lightningSg = new ec2.SecurityGroup(this, "LightningSecurityGroup", {
+    const lightningSg = new ec2.SecurityGroup(this, "LightningSecurityGroup" + suffix, {
       vpc,
       description: 'Allow lightning protocol (port 9735) traffic from the Internet',
     });
     lightningSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(9735));
-    const setupScript = new Asset(this, "SetupScript", {
-      path: path.join(__dirname, 'configure-node.sh')
-    });
-    const rpcSg = new ec2.SecurityGroup(this, "RpcSecurityGroup", {
+    const rpcSg = new ec2.SecurityGroup(this, "RpcSecurityGroup" + suffix, {
       vpc,
       description: 'Allow access to lnd grpc interface',
     });
     rpcSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(10009));
-    const restSg = new ec2.SecurityGroup(this, "RestSecurityGroup", {
+    const restSg = new ec2.SecurityGroup(this, "RestSecurityGroup" + suffix, {
       vpc: vpc,
       description: "Allow access to lnd REST ports"
     });
@@ -59,7 +57,7 @@ export class LightningNode extends cdk.Stack {
       cpuType: ec2.AmazonLinuxCpuType.ARM_64
     });
 
-    const instance = new ec2.Instance(this, "lightningNode", {
+    const instance = new ec2.Instance(this, "lightningNode" + suffix, {
       instanceType: new ec2.InstanceType("t4g.micro"),
       vpc: vpc,
       machineImage: ami,
@@ -76,12 +74,15 @@ export class LightningNode extends cdk.Stack {
     // You can also edit the ingress rule above if you want a different port
     // instance.addSecurityGroup(restSg);
 
-    const eip = new CfnEIP(this, "NodeEIP", {
+    const eip = new CfnEIP(this, "NodeEIP" + suffix, {
       domain: "vpc",
       instanceId: instance.instanceId
     });
 
     // Wire the bootstrap script into the instance userdata
+    const setupScript = new Asset(this, "SetupScript" + suffix, {
+      path: path.join(__dirname, 'configure-node.sh')
+    });
     const localPath = instance.userData.addS3DownloadCommand({
       bucket:setupScript.bucket,
       bucketKey:setupScript.s3ObjectKey,

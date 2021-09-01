@@ -19,3 +19,6 @@ new LightningNode(app, 'ThundercloudStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
+
+// Here's an example of a second node. uncomment this and then run `cdk deploy SecondLightningNode`
+// new LightningNode(app, 'SecondLightningNode', {stackName: "SecondLightningNode"});
