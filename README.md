@@ -53,9 +53,7 @@ I wanted to make the instance small and cheap. If you want to run a full `bitcoi
 No. Maybe it will in the future. Right now it's lncli and bos only.
 
 ## Possible future enhancements (PR's welcome!)
-- automatically backup channel state to S3
 - set up RTL or Thunderhub
-- use an elastic-ip for the node
 - would be cool to do a 1/1 autoscaling group, but need to make sure channel backup is SOLID
 - second instance for a watchtower
 - use ec2 instance-connect instead of the ssh key
