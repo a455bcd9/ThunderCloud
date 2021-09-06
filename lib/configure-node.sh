@@ -193,6 +193,7 @@ REGION=$(curl http://169.254.169.254/latest/meta-data/placement/region)
 FILE_PATH=/home/ec2-user/.lnd/data/chain/bitcoin/mainnet/channel.backup
 S3_CHAN_BUCKET=$(aws --region=$REGION ssm get-parameter --name lightning.backup.bucketname | jq -r .Parameter.Value)
 echo "$FILE_PATH IN_CLOSE_WRITE aws --region=$REGION s3 cp $FILE_PATH s3://$S3_CHAN_BUCKET/channel.backup" > /etc/incron.d/channelbackup
+echo "$FILE_PATH IN_MODIFY aws --region=$REGION s3 cp $FILE_PATH s3://$S3_CHAN_BUCKET/channel.backup" >> /etc/incron.d/channelbackup
 systemctl enable incrond
 systemctl start incrond
 
