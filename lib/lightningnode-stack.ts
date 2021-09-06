@@ -4,7 +4,8 @@ import {Asset} from '@aws-cdk/aws-s3-assets';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import * as path from 'path';
 import { CfnEIP } from '@aws-cdk/aws-ec2';
-
+import { Bucket } from '@aws-cdk/aws-s3';
+import { ParameterTier, StringParameter } from '@aws-cdk/aws-ssm';
 
 export class LightningNode extends cdk.Stack {
   get availabilityZones(): string[] {
@@ -24,7 +25,7 @@ export class LightningNode extends cdk.Stack {
 
     // SSH key for the node
     const key = new KeyPair(this, 'KeyPair' + suffix, {
-      name: 'cdk-keypair',
+      name: 'lightning-keypair' + suffix,
       description: 'Key Pair created with CDK Deployment',
     });
     
@@ -93,11 +94,22 @@ export class LightningNode extends cdk.Stack {
     });
     setupScript.grantRead( instance.role );
 
+    const channelBucket = new Bucket(this, "ChannelBackupBucket" + suffix, {});
+    channelBucket.grantWrite(instance.role);
+
+    const bucketNameParam = new StringParameter(this, "BucketNameParam" + suffix, {
+      parameterName: "lightning.backup.bucketname",
+      stringValue: channelBucket.bucketName,
+      tier: ParameterTier.STANDARD
+    });
+    bucketNameParam.grantRead(instance.role);
+
     // These outputs get printed when you are done deploying, and can be found in the "Outputs" tab
     // of the Cloudformation stack. You can also fetch them programatically. Feel free to add more
     new cdk.CfnOutput(this, 'IP Address', { value: instance.instancePublicIp });
-    new cdk.CfnOutput(this, 'Key Name', { value: key.keyPairName })
-    new cdk.CfnOutput(this, 'Download Key Command', { value: 'aws secretsmanager get-secret-value --secret-id ec2-ssh-key/cdk-keypair/private --query SecretString --output text > cdk-key.pem && chmod 400 cdk-key.pem' })
-    new cdk.CfnOutput(this, 'ssh command', { value: 'ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user@' + instance.instancePublicIp })
+    new cdk.CfnOutput(this, 'Key Name', { value: key.keyPairName });
+    new cdk.CfnOutput(this, 'Download Key Command', { value: 'aws secretsmanager get-secret-value --secret-id ec2-ssh-key/lightning-keypair' + suffix + '/private --query SecretString --output text > cdk-key.pem && chmod 400 cdk-key.pem' });
+    new cdk.CfnOutput(this, 'ssh command', { value: 'ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user@' + instance.instancePublicIp });
+    new cdk.CfnOutput(this, 'Channel Backup Bucket', { value: channelBucket.bucketName });
   }
 }
