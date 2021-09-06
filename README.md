@@ -21,10 +21,10 @@ ThundercloudStack.sshcommand = ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user
 ```
 Copy and paste that first command (`aws secretsmanager ...`) to download the SSH key for your node
 
-5. Copy and paste the ssh command (last line) to SSH to your node. 
-6. Do `ps ax` on the instance and look for lnd. if its not running, give it a minute, the setup script is stil running. 
-7. `cat ~/.lnd/wallet_password` and copy it down. Then do `lncli create` to create a new lightning wallet. Supply the password you just wrote down (or copy/paste it). choose "no" when it asks if you want to encrypt the wallet. It will spit out a 24 word seed phrase **WRITE DOWN YOUR SEED WORDS**
-8. That's it! you're done! you now have an LND node running in the cloud!
+6. Copy and paste the ssh command (last line) to SSH to your node. 
+7. Do `ps ax` on the instance and look for lnd. if its not running, give it a minute, the setup script is stil running. 
+8. `cat ~/.lnd/wallet_password` and copy it down. Then do `lncli create` to create a new lightning wallet. Supply the password you just wrote down (or copy/paste it). choose "no" when it asks if you want to encrypt the wallet. It will spit out a 24 word seed phrase **WRITE DOWN YOUR SEED WORDS**
+9. That's it! you're done! you now have an LND node running in the cloud!
 
 You can use `lncli` to open channels, create invoices, do all the fun lightning things. `bos` is also installed if you want to use it for bos-flavored channel balancing, batch channel opens, etc.
 
@@ -34,7 +34,8 @@ Want to add a second (or third or fourth) node? Go into `bin/thundercloud.ts` an
 
 
 ## Shutting down the node
-1. go into the project root and do `cdk destroy`
+1. Go into the project root and do `cdk destroy`
+
 There is no step 2. You can also go find the stack in CloudFormation and delete it there. either way works.
 
 ## Stuff to look at and customize
