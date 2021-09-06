@@ -6,10 +6,12 @@ This project makes it really easy (or at least as easy as it can be) to run a li
 - Install the CDK CLI (https://docs.aws.amazon.com/cdk/latest/guide/cli.html)
 
 ## Instructions
-1. cd into the `thundercloud` root and do `npm install`.
-2. run `cdk bootstrap` (only needed once per account) and then `cdk deploy`
-3. watch the pretty bars fill up
-4. It will spit out something like this:
+0. update "lightningnode-stack.ts" depending on your Availability Zones (AZs)
+1. cd into the `ThunderCloud` root and do `npm install`
+2. run `cdk bootstrap` (only needed once per account)
+3. run `cdk deploy`
+4. watch the pretty bars fill up
+5. It will spit out something like this:
 ```
 Outputs:
 ThundercloudStack.DownloadKeyCommand = aws secretsmanager get-secret-value --secret-id ec2-ssh-key/cdk-keypair/private --query SecretString --output text > cdk-key.pem && chmod 400 cdk-key.pem
