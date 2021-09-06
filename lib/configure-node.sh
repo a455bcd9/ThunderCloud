@@ -186,6 +186,18 @@ chown -R ec2-user: /home/ec2-user/bin
 # ensure the wallet is unlocked by unlocking it every 5 minutes
 echo '*/5 * * * * ec2-user /home/ec2-user/.npm-global/bin/bos unlock /home/ec2-user/.lnd/wallet_password' >> /etc/crontab
 
+# Setup incron to backup channels whenver they're changed
+amazon-linux-extras install -y epel
+yum install -y incron jq
+REGION=$(curl http://169.254.169.254/latest/meta-data/placement/region)
+FILE_PATH=/home/ec2-user/.lnd/data/chain/bitcoin/mainnet/channel.backup
+S3_CHAN_BUCKET=$(aws --region=$REGION ssm get-parameter --name lightning.backup.bucketname | jq -r .Parameter.Value)
+echo "$FILE_PATH IN_CLOSE_WRITE aws --region=$REGION s3 cp $FILE_PATH s3://$S3_CHAN_BUCKET/channel.backup" > /etc/incron.d/channelbackup
+echo "$FILE_PATH IN_MODIFY aws --region=$REGION s3 cp $FILE_PATH s3://$S3_CHAN_BUCKET/channel.backup" >> /etc/incron.d/channelbackup
+systemctl enable incrond
+systemctl start incrond
+
+
 # Start lnd!
 systemctl enable lnd.service
 systemctl start lnd.service

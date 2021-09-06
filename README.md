@@ -32,6 +32,7 @@ By default, the grpc port will not be accessible. There's a security group that 
 
 Want to add a second (or third or fourth) node? Go into `bin/thundercloud.ts` and add a line at the end like `new LightningNode(app, 'SecondLightningNode', {stackName: "SecondLightningNode"});`, then do `cdk deploy SecondLightningNode`. 
 
+
 ## Shutting down the node
 1. go into the project root and do `cdk destroy`
 There is no step 2. You can also go find the stack in CloudFormation and delete it there. either way works.
@@ -42,6 +43,7 @@ There is no step 2. You can also go find the stack in CloudFormation and delete 
 - When your node first boots, it'll execute `lib/configure-node.sh` as root. This is where lnd gets downloaded and configured. Feel free to tweak it to your needs.
 - All the infrastructure is defined in `lib/lightningnode-stack.ts`. You can add/remove/change things there to your liking. doing a `cdk deploy` will update the stack. Changing some instance properties will result in the node being deleted and recreated. Be careful changing the instance.
 - If you need to change the AZs that the stack uses for VPC subnets, check out the `get availabilityZones()` in `lib/lightningnode-stack.ts`
+- This stack will also create an S3 bucket to hold static channel backups, and the instance will be configured to upload a channel backup everytime it changes. You can find the name of the bucket in the stack outputs (along wih the IP and keyname). Check out `/etc/incron.d/channelbackup` to see the configuration. The `aws s3 ...` command will run whenever the `~/.lnd/data/chain/bitcoin/mainnet/channel.backup` file is closed after writing.
 
 ## FAQ
 - Why neutrino?
