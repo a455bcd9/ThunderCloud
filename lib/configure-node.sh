@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Download and unpack the latest lnd. 
-wget https://github.com/lightningnetwork/lnd/releases/download/v0.13.1-beta/lnd-linux-arm64-v0.13.1-beta.tar.gz
+# Download and unpack the latest lnd
+# Check to get the latest release: https://github.com/lightningnetwork/lnd/releases/latest
+wget https://github.com/lightningnetwork/lnd/releases/download/v0.13.3-beta/lnd-linux-arm64-v0.13.3-beta.tar.gz
 # TODO: verify signatures on the download
-tar xf lnd-linux-arm64-v0.13.1-beta.tar.gz
+tar xf lnd-linux-arm64-v0.13.3-beta.tar.gz
 mkdir /home/ec2-user/bin
-cp lnd-linux-arm64-v0.13.1-beta/* /home/ec2-user/bin/
-rm -rf lnd-linux-arm64-v0.13.1-beta*
+cp lnd-linux-arm64-v0.13.3-beta/* /home/ec2-user/bin/
+rm -rf lnd-linux-arm64-v0.13.3-beta*
 
 # Write lnd config. Feel free to customize this to your liking. You'll want to change the node alias
 mkdir /home/ec2-user/.lnd
